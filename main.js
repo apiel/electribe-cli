@@ -73,6 +73,40 @@ function parseMessage(data) {
 }
 
 const BEAT = ['16', '32', '8 Tri', '16 Tri'];
+const MFX = [
+    'Mod Delay',
+    'Tape Delay',
+    'High Pass Delay',
+    'Hall Reverb',
+    'Room Reverb',
+    'Wet Reverb',
+    'Looper',
+    'Pitch Lopper',
+    'Step Shifter',
+    'Slicer',
+    'Jag Filter',
+    'Grain Shifter',
+    'Vinyl Break',
+    'Seq Reverse',
+    'Seq Doubler',
+    'Odd Stepper',
+    'Even Stepper',
+    'Low Pass Filter',
+    'High Pass Filter',
+    'Band Plus Filter',
+    'Touch Wah',
+    'Tube EQ',
+    'Decimator',
+    'Distortion',
+    'Compressor',
+    'Limiter',
+    'Chorus',
+    'XY Flanger',
+    'LFO Flanger',
+    'XY Phaser',
+    'LFO Phaser',
+    'Auto Pan',
+];
 
 function parsePattern(rawData) {
     const data = [...rawData];
@@ -85,14 +119,19 @@ function parsePattern(rawData) {
         .map((c) => String.fromCharCode(c))
         .join('');
 
-    const tempo = data[46] + data[48] * 256 + (data[39] ? 128 : 0);
-    const beat = BEAT[data[51]];
+    const swing = data[49] > 50 ? data[49] - 128 : data[49];
 
-    console.log({
+    const pattern = {
         name,
-        tempo,
-        beat,
-    });
+        tempo: data[46] + data[48] * 256 + (data[39] ? 128 : 0),
+        swing: swing === 48 ? 50 : swing === -48 ? -50 : swing,
+        length: data[50] + 1,
+        beat: BEAT[data[51]],
+        level: 127 - data[56],
+        mfx: MFX[data[77]],
+    };
+
+    console.log(pattern);
 }
 
 function cmpLog(data) {
