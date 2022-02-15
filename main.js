@@ -72,6 +72,8 @@ function parseMessage(data) {
     }
 }
 
+const BEAT = ['16', '32', '8 Tri', '16 Tri'];
+
 function parsePattern(rawData) {
     const data = [...rawData];
 
@@ -84,9 +86,12 @@ function parsePattern(rawData) {
         .join('');
 
     const tempo = data[46] + data[48] * 256 + (data[39] ? 128 : 0);
+    const beat = BEAT[data[51]];
+
     console.log({
         name,
         tempo,
+        beat,
     });
 }
 
