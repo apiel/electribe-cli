@@ -1156,6 +1156,17 @@ function parsePattern(rawData) {
         modulation: MOD[data[2366]],
         modSpeed: data[2368],
         modDepth: data[2369],
+        mfxSend: !!data[2379],
+        ampEG: !!data[2378],
+        level: data[2376],
+        pan:
+            data[2377] === 0
+                ? 'center'
+                : data[2377] > 64
+                ? `L ${data[2377] * -1 + 128}`
+                : `R ${data[2377]}`,
+        attack: data[2371],
+        decayRelease: data[2372],
     };
     console.log('part', { part });
 
