@@ -1107,6 +1107,47 @@ const MOD = [
     },
 ];
 
+const IFX = [
+    'Punch',
+    'Overdrive ',
+    'Distortion ',
+    'Decimator ',
+    'Bit Crusher ',
+    'Ring Modulator ',
+    'Sustainer ',
+    'Limiter ',
+    'Low EQ',
+    'Mid EQ',
+    'High EQ',
+    'Radio EQ',
+    'Exciter',
+    'Low Pass Filter',
+    'High Pass Filter',
+    'Band Plus Filter',
+    'Talk Filter',
+    'Delay 1/4',
+    'Delay 3/16',
+    'Delay 1/8',
+    'Delay 1/16',
+    'Roller 1/32',
+    'One Delay',
+    'Short Delay',
+    'Ring Delay 1',
+    'Ring Delay 2',
+    'Chorus',
+    'Flanger LFO',
+    'Flanger +',
+    'Flanger -',
+    'Phaser LFO 1',
+    'Phaser LFO 2',
+    'Phaser Manual',
+    'Tremolo',
+    'Off Beater',
+    'Pumper',
+    'Repeater',
+    'Slicer',
+];
+
 function parsePattern(rawData) {
     const data = [...rawData];
 
@@ -1135,6 +1176,7 @@ function parsePattern(rawData) {
         alternate15_16: !!data[86],
         chainTo: data[17269] + (data[17263] && 128),
         chainRepeat: data[17272],
+        mfxHold: !!data[82],
         // last step is per part
         // groove is per s
     };
@@ -1167,6 +1209,10 @@ function parsePattern(rawData) {
                 : `R ${data[2377]}`,
         attack: data[2371],
         decayRelease: data[2372],
+        ifxOn: !!data[2385],
+        ifxId: data[2386] + 1,
+        ifx: IFX[data[2386]],
+        ifxEdit: data[2387],
     };
     console.log('part', { part });
 
