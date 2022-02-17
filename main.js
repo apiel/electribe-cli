@@ -1183,38 +1183,84 @@ function parsePattern(rawData) {
 
     event.onPatternData({ pattern, data });
 
-    const oscId = data[2357] + (data[2351] && 128) + (data[2358] && 256);
-    const part = {
-        oscId: oscId + 1,
-        osc: OSC[oscId],
-        oscEdit: data[2361],
-        pitch: data[2389] > 64 ? data[2389] - 128 : data[2389],
-        filterId: data[2362],
-        filter: FILTER[data[2362]],
-        cutoff: data[2363],
-        resonance: data[2364],
-        egInt: data[2365] > 64 ? data[2365] - 128 : data[2365],
-        modulationId: data[2366] + 1,
-        modulation: MOD[data[2366]],
-        modSpeed: data[2368],
-        modDepth: data[2369],
-        mfxSend: !!data[2379],
-        ampEG: !!data[2378],
-        level: data[2376],
-        pan:
-            data[2377] === 0
-                ? 'center'
-                : data[2377] > 64
-                ? `L ${data[2377] * -1 + 128}`
-                : `R ${data[2377]}`,
-        attack: data[2371],
-        decayRelease: data[2372],
-        ifxOn: !!data[2385],
-        ifxId: data[2386] + 1,
-        ifx: IFX[data[2386]],
-        ifxEdit: data[2387],
-    };
-    console.log('part', { part });
+    for (let partId = 0; partId < 16; partId++) {
+        const part = parsePart(data, partId);
+        // console.log({ part });
+        // console.log(`part ${partId}`, part.osc);
+        // console.log(`part ${partId}`, part.cutoff);
+        console.log(`part ${partId}`, part.ifx);
+    }
 
     return pattern;
+}
+
+function parsePart(data, partId) {
+    const START_POS = [
+        [2357, 2360],
+        [3290, 3293],
+        [4222, 4225],
+        [5155, 5158],
+        [6088, 6090],
+        [7020, 7023],
+        [7953, 7955],
+        [8885, 8888],
+        [9818, 9821],
+        [10750, 10753],
+        [11683, 11686],
+        [12616, 12618],
+        [13548, 13551],
+        [14481, 14483],
+        [15413, 15416],
+        [16346, 16349],
+    ];
+
+    const WEIRD_OSC_POS = [
+        [32, -6, 1],
+        [4, -3, 1],
+        [64, -7, 2],
+        [8, -4, 1],
+        [1, -1, 1],
+        [16, -5, 1],
+        [2, -2, 1],
+    ];
+    const [, weirdoA, weirdoB] = WEIRD_OSC_POS[partId % 7];
+
+    const [oscPos, pos] = START_POS[partId];
+    const oscId =
+        data[oscPos] +
+        (data[oscPos + weirdoA] && 128) +
+        (data[oscPos + weirdoB] && 256);
+    const part = {
+        name: `part ${partId + 1}`,
+        oscId: oscId + 1,
+        osc: OSC[oscId],
+        oscEdit: data[pos + 1],
+        pitch: data[pos + 29] > 64 ? data[pos + 29] - 128 : data[pos + 29],
+        filterId: data[pos + 2],
+        filter: FILTER[data[pos + 2]],
+        cutoff: data[pos + 3],
+        resonance: data[pos + 4],
+        egInt: data[pos + 5] > 64 ? data[pos + 5] - 128 : data[pos + 5],
+        modulationId: data[pos + 6] + 1,
+        modulation: MOD[data[pos + 6]],
+        modSpeed: data[pos + 8],
+        modDepth: data[pos + 9],
+        mfxSend: !!data[pos + 19],
+        ampEG: !!data[pos + 18],
+        level: data[pos + 16],
+        pan:
+            data[pos + 17] === 0
+                ? 'center'
+                : data[pos + 17] > 64
+                ? `L ${data[pos + 17] * -1 + 128}`
+                : `R ${data[pos + 17]}`,
+        attack: data[pos + 11],
+        decayRelease: data[pos + 12],
+        ifxOn: !!data[pos + 25],
+        ifxId: data[pos + 26] + 1,
+        ifx: IFX[data[pos + 26]],
+        ifxEdit: data[pos + 27],
+    };
+
+    return part;
 }
