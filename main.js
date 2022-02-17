@@ -1192,7 +1192,7 @@ function parsePattern(rawData) {
     }
 
     // console.log(parsePart(data, 1));
-    console.log(parsePart(data, 1));
+    console.log(parsePart(data, 4));
 
     return pattern;
 }
@@ -1224,7 +1224,7 @@ function parsePart(data, partId) {
             5158,
             { modDepthPos: 8, modSpeedPos: 7, levelPos: 15, ifxOnPos: 24 },
         ], // part 4
-        [6088, 6090, {}], // part 5
+        [6088, 6090, { glidePos: 31, pitchPos: 30, egInt: 6, modPos: 7 }], // part 5
         [7020, 7023, {}], // part 6
         [7953, 7955, {}], // part 7
         [8885, 8888, {}], // part 8
@@ -1263,6 +1263,9 @@ function parsePart(data, partId) {
             ifxEditPos = 27,
             filterPos = 2,
             ampEGpos = 18,
+            glidePos = 30,
+            pitchPos = 29,
+            egInt = 5,
         },
     ] = START_POS[partId];
     // console.log('part', partId, ':', pos + modPos);
@@ -1276,13 +1279,19 @@ function parsePart(data, partId) {
         oscId: oscId + 1,
         osc: OSC[oscId],
         oscEdit: data[pos + oscEditPos],
-        pitch: data[pos + 29] > 64 ? data[pos + 29] - 128 : data[pos + 29],
-        glide: data[pos + 30],
+        pitch:
+            data[pos + pitchPos] > 64
+                ? data[pos + pitchPos] - 128
+                : data[pos + pitchPos],
+        glide: data[pos + glidePos],
         filterId: data[pos + filterPos],
         filter: FILTER[data[pos + filterPos]],
         cutoff: data[pos + 3],
         resonance: data[pos + 4],
-        egInt: data[pos + 5] > 64 ? data[pos + 5] - 128 : data[pos + 5],
+        egInt:
+            data[pos + egInt] > 64
+                ? data[pos + egInt] - 128
+                : data[pos + egInt],
         modulationId: data[pos + modPos] + 1,
         modulation: MOD[data[pos + modPos]],
         modSpeed: data[pos + modSpeedPos],
