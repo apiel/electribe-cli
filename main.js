@@ -1109,13 +1109,13 @@ const MOD = [
 
 const IFX = [
     'Punch',
-    'Overdrive ',
-    'Distortion ',
-    'Decimator ',
-    'Bit Crusher ',
-    'Ring Modulator ',
-    'Sustainer ',
-    'Limiter ',
+    'Overdrive',
+    'Distortion',
+    'Decimator',
+    'Bit Crusher',
+    'Ring Modulator',
+    'Sustainer',
+    'Limiter',
     'Low EQ',
     'Mid EQ',
     'High EQ',
@@ -1188,30 +1188,54 @@ function parsePattern(rawData) {
         // console.log({ part });
         // console.log(`part ${partId}`, part.osc);
         // console.log(`part ${partId}`, part.cutoff);
-        console.log(`part ${partId}`, part.ifx);
+        // console.log(`part ${partId}`, part.ifx);
     }
+
+    // console.log(parsePart(data, 1));
+    console.log(parsePart(data, 1));
 
     return pattern;
 }
 
 function parsePart(data, partId) {
+    // part2 many stuff wrong
+    // part4
+
     const START_POS = [
-        [2357, 2360],
-        [3290, 3293],
-        [4222, 4225],
-        [5155, 5158],
-        [6088, 6090],
-        [7020, 7023],
-        [7953, 7955],
-        [8885, 8888],
-        [9818, 9821],
-        [10750, 10753],
-        [11683, 11686],
-        [12616, 12618],
-        [13548, 13551],
-        [14481, 14483],
-        [15413, 15416],
-        [16346, 16349],
+        [2357, 2360, {}], // part 1
+        [
+            3290,
+            3293,
+            {
+                oscEditPos: 0,
+                filterPos: 1,
+                modPos: 6,
+                modDepthPos: 8,
+                modSpeedPos: 7,
+                ampEGpos: 17,
+                levelPos: 15,
+                ifxOnPos: 24,
+                ifxPos: 25,
+            },
+        ], // part 2
+        [4222, 4225, { modPos: 7 }], // part 3
+        [
+            5155,
+            5158,
+            { modDepthPos: 8, modSpeedPos: 7, levelPos: 15, ifxOnPos: 24 },
+        ], // part 4
+        [6088, 6090, {}], // part 5
+        [7020, 7023, {}], // part 6
+        [7953, 7955, {}], // part 7
+        [8885, 8888, {}], // part 8
+        [9818, 9821, {}], // part 9
+        [10750, 10753, {}], // part 10
+        [11683, 11686, {}], // part 11
+        [12616, 12618, {}], // part 12
+        [13548, 13551, {}], // part 13
+        [14481, 14483, {}], // part 14
+        [15413, 15416, {}], // part 15
+        [16346, 16349, {}], // part 16
     ];
 
     const WEIRD_OSC_POS = [
@@ -1225,7 +1249,24 @@ function parsePart(data, partId) {
     ];
     const [, weirdoA, weirdoB] = WEIRD_OSC_POS[partId % 7];
 
-    const [oscPos, pos] = START_POS[partId];
+    const [
+        oscPos,
+        pos,
+        {
+            oscEditPos = 1,
+            modPos = 10,
+            modDepthPos = 9,
+            modSpeedPos = 8,
+            levelPos = 16,
+            ifxOnPos = 25,
+            ifxPos = 26,
+            ifxEditPos = 27,
+            filterPos = 2,
+            ampEGpos = 18,
+        },
+    ] = START_POS[partId];
+    // console.log('part', partId, ':', pos + modPos);
+
     const oscId =
         data[oscPos] +
         (data[oscPos + weirdoA] && 128) +
@@ -1234,20 +1275,21 @@ function parsePart(data, partId) {
         name: `part ${partId + 1}`,
         oscId: oscId + 1,
         osc: OSC[oscId],
-        oscEdit: data[pos + 1],
+        oscEdit: data[pos + oscEditPos],
         pitch: data[pos + 29] > 64 ? data[pos + 29] - 128 : data[pos + 29],
-        filterId: data[pos + 2],
-        filter: FILTER[data[pos + 2]],
+        glide: data[pos + 30],
+        filterId: data[pos + filterPos],
+        filter: FILTER[data[pos + filterPos]],
         cutoff: data[pos + 3],
         resonance: data[pos + 4],
         egInt: data[pos + 5] > 64 ? data[pos + 5] - 128 : data[pos + 5],
-        modulationId: data[pos + 6] + 1,
-        modulation: MOD[data[pos + 6]],
-        modSpeed: data[pos + 8],
-        modDepth: data[pos + 9],
+        modulationId: data[pos + modPos] + 1,
+        modulation: MOD[data[pos + modPos]],
+        modSpeed: data[pos + modSpeedPos],
+        modDepth: data[pos + modDepthPos],
         mfxSend: !!data[pos + 19],
-        ampEG: !!data[pos + 18],
-        level: data[pos + 16],
+        ampEG: !!data[pos + ampEGpos],
+        level: data[pos + levelPos],
         pan:
             data[pos + 17] === 0
                 ? 'center'
@@ -1256,10 +1298,10 @@ function parsePart(data, partId) {
                 : `R ${data[pos + 17]}`,
         attack: data[pos + 11],
         decayRelease: data[pos + 12],
-        ifxOn: !!data[pos + 25],
-        ifxId: data[pos + 26] + 1,
-        ifx: IFX[data[pos + 26]],
-        ifxEdit: data[pos + 27],
+        ifxOn: !!data[pos + ifxOnPos],
+        ifxId: data[pos + ifxPos] + 1,
+        ifx: IFX[data[pos + ifxPos]],
+        ifxEdit: data[pos + ifxEditPos],
     };
 
     return part;
