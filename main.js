@@ -1192,7 +1192,7 @@ function parsePattern(rawData) {
     }
 
     // console.log(parsePart(data, 1));
-    console.log(parsePart(data, 4));
+    console.log(parsePart(data, 6));
 
     return pattern;
 }
@@ -1225,8 +1225,19 @@ function parsePart(data, partId) {
             { modDepthPos: 8, modSpeedPos: 7, levelPos: 15, ifxOnPos: 24 },
         ], // part 4
         [6088, 6090, { glidePos: 31, pitchPos: 30, egInt: 6, modPos: 7 }], // part 5
-        [7020, 7023, {}], // part 6
-        [7953, 7955, {}], // part 7
+        [7020, 7023, { modPos: 6, modSpeedPos: 7, levelPos: 15 }], // part 6
+        [
+            7953,
+            7955,
+            {
+                pitchPos: 30,
+                glidePos: 31,
+                resPos: 5,
+                egInt: 6,
+                modPos: 7,
+                decayReleasePos: 13,
+            },
+        ], // part 7
         [8885, 8888, {}], // part 8
         [9818, 9821, {}], // part 9
         [10750, 10753, {}], // part 10
@@ -1266,6 +1277,8 @@ function parsePart(data, partId) {
             glidePos = 30,
             pitchPos = 29,
             egInt = 5,
+            resPos = 4,
+            decayReleasePos = 12,
         },
     ] = START_POS[partId];
     // console.log('part', partId, ':', pos + modPos);
@@ -1287,7 +1300,7 @@ function parsePart(data, partId) {
         filterId: data[pos + filterPos],
         filter: FILTER[data[pos + filterPos]],
         cutoff: data[pos + 3],
-        resonance: data[pos + 4],
+        resonance: data[pos + resPos],
         egInt:
             data[pos + egInt] > 64
                 ? data[pos + egInt] - 128
@@ -1306,7 +1319,7 @@ function parsePart(data, partId) {
                 ? `L ${data[pos + 17] * -1 + 128}`
                 : `R ${data[pos + 17]}`,
         attack: data[pos + 11],
-        decayRelease: data[pos + 12],
+        decayRelease: data[pos + decayReleasePos],
         ifxOn: !!data[pos + ifxOnPos],
         ifxId: data[pos + ifxPos] + 1,
         ifx: IFX[data[pos + ifxPos]],
