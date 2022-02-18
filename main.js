@@ -1238,7 +1238,7 @@ function parsePart(data, partId) {
                 decayReleasePos: 13,
             },
         ], // part 7
-        [8885, 8888, {modPos:6}], // part 8
+        [8885, 8888, { modPos: 6 }], // part 8
         [9818, 9821, {}], // part 9
         [10750, 10753, {}], // part 10
         [11683, 11686, {}], // part 11
